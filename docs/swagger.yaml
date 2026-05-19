@@ -1,0 +1,115 @@
+openapi: 3.0.3
+info:
+  title: PHP News CMS & Blog API Documentation
+  description: Специфікація API для інформаційної системи новин. Документація двух ендпоінтів.
+  version: 1.0.0
+servers:
+  - url: http://localhost/index.php
+    description: Локальний сервер розробки
+paths:
+
+  # Авторизація адміністратора
+  /?controller=auth&action=login:
+    post:
+      summary: Автентифікація адміністратора в системі
+      description: Приймає облікові дані користувача (Username та Password) у форматі form-data, перевіряє їх у базі даних та створює сесію.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                Username:
+                  type: string
+                  description: Унікальне ім'я користувача (логін)
+                  example: admin
+                Password:
+                  type: string
+                  description: Пароль користувача
+                  example: supersecret123
+              required:
+                - Username
+                - Password
+      responses:
+        '302':
+          description: Успішна автентифікація. Користувача перенаправляє на Панель інструментів.
+          headers:
+            Location:
+              schema:
+                type: string
+                example: index.php?controller=dashboard&action=index
+        '400':
+          description: Помилка валідації. Одне з полів порожнє (редирект назад на сторінку логіну з flash-помилкою).
+        '401':
+          description: Неправильне ім'я користувача або пароль.
+
+  # Асинхронне додавання коментарів
+  /?controller=blog&action=commentAsync:
+    post:
+      summary: Асинхронне додавання коментаря до статті
+      description: Обробляє POST-запит через XMLHttpRequest для додавання коментаря. Потребує ID поста як GET-параметр. Перевіряє захист від спаму - 120 секунд.
+      tags:
+        - Comments
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: Унікальний ідентифікатор статті, до якої додається коментар
+          schema:
+            type: integer
+            example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Ім'я автора коментаря
+                  example: Софія Котюк
+                email:
+                  type: string
+                  format: email
+                  description: Електронна пошта автора коментаря
+                  example: sofiia@example.com
+                comment:
+                  type: string
+                  description: Текст коментаря (максимум 500 символів)
+                  example: Дуже цікава стаття!
+              required:
+                - name
+                - email
+                - comment
+      responses:
+        '200':
+          description: Коментар успішно збережено або повернуто помилку валідації/спаму у форматі JSON.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  comment:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Софія Котюк
+                      datetime:
+                        type: string
+                        example: May-19-2026 15:30:00
+                      comment:
+                        type: string
+                        example: Дуже цікава стаття!
+                  message:
+                    type: string
+                    example: Будь ласка, зачекайте кілька хвилин перед наступним коментарем.
+        '400':
+          description: Некоректний запит (відсутній заголовок X-Requested-With або неправильний HTTP-метод).
