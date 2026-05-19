@@ -1,0 +1,5 @@
+  <!-- Підключаємо JS -->
+  <script src="jquery-3.3.1.slim.min.js"></script>
+  <script src="bootstrap.min.js"></script>
+</body>
+</html>

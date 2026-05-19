@@ -1,0 +1,39 @@
+/* ========== Повна висота сторінки для header + content + footer ========== */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* ========== Контейнер сторінки (header + content + footer) ========== */
+#page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ========== Основний контент «розтягується» ========== */
+#content {
+  flex: 1;
+  /* Додаємо відступ унизу, щоб футер не перекривав текст */
+  margin-bottom: 80px; /* підлаштуйте під реальну висоту вашого футера */
+}
+
+/* ========== Тепер сам футер «фіксований» ========== */
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 100; /* щоб бути зверху будь-чого */
+}
+
+/* ========== Ваші існуючі класи ========== */
+.FieldInfo {
+  color: rgb(251, 174, 44);
+  font-family: Bitter, Georgia, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+}
+
+.CommentBlock {
+  background-color: #F6F7F9;
+}
